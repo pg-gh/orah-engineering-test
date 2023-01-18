@@ -49,7 +49,7 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
       </S.PageContainer>
-      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} />
+      {loadState === "loaded" && data?.students && <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} list={data?.students} />}
     </>
   )
 }

@@ -10,3 +10,19 @@ export interface RollInput {
 }
 
 export type RolllStateType = "unmark" | "present" | "absent" | "late"
+
+export type RollAction = { type: "ADD"; payload: RollInputItem } | { type: "UPDATE"; payload: RollInputItem }
+
+export interface RollInputItem {
+  student_id: number
+  roll_state: RolllStateType
+}
+
+export interface RollState {
+  rolls: RollInputItem[]
+}
+
+export interface ContextModel {
+  state: RollState
+  dispatch: React.Dispatch<RollAction>
+}

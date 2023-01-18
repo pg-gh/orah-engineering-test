@@ -1,16 +1,28 @@
-import React from "react"
+import React, { useContext } from "react"
 import styled from "styled-components"
 import { Spacing, BorderRadius, FontWeight } from "shared/styles/styles"
 import { Images } from "assets/images"
 import { Colors } from "shared/styles/colors"
 import { Person, PersonHelper } from "shared/models/person"
 import { RollStateSwitcher } from "staff-app/components/roll-state/roll-state-switcher.component"
+import { RolllStateType } from "shared/models/roll"
+import { Context as RollContext } from "context/roll-context.component"
 
 interface Props {
   isRollMode?: boolean
   student: Person
 }
 export const StudentListTile: React.FC<Props> = ({ isRollMode, student }) => {
+  const { state, dispatch } = useContext(RollContext)
+
+  const onRollStateChange = (rollState: RolllStateType) => {
+    const found = state?.rolls.some((el) => el.student_id === student.id)
+    dispatch({
+      type: !found ? "ADD" : "UPDATE",
+      payload: { student_id: student.id, roll_state: rollState },
+    })
+  }
+
   return (
     <S.Container>
       <S.Avatar url={Images.avatar}></S.Avatar>
@@ -19,7 +31,7 @@ export const StudentListTile: React.FC<Props> = ({ isRollMode, student }) => {
       </S.Content>
       {isRollMode && (
         <S.Roll>
-          <RollStateSwitcher />
+          <RollStateSwitcher onStateChange={onRollStateChange} />
         </S.Roll>
       )}
     </S.Container>

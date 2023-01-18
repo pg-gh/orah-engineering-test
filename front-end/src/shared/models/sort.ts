@@ -1,4 +1,6 @@
-export type ListItem = { id: number; first_name: string; last_name: string; photo_url?: string }
+import { Person } from "./person"
+
+export type ListItem = Person
 
 export type SortDirection = "asc" | "desc"
 
