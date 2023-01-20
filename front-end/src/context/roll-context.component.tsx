@@ -1,22 +1,22 @@
 import React, { useReducer } from "react"
-import { RollAction, ContextModel, RollState } from "shared/models/roll"
+import { RollAction, ContextModel, RollInput } from "shared/models/roll"
 
-const defaultState: RollState = {
-  rolls: [],
+const defaultState: RollInput = {
+  student_roll_states: [],
 }
 
-const reducer = (state: RollState, action: RollAction): RollState => {
+const reducer = (state: RollInput, action: RollAction): RollInput => {
   switch (action.type) {
     case "ADD":
       return {
         ...state,
-        rolls: [...state.rolls, action.payload],
+        student_roll_states: [...state.student_roll_states, action.payload],
       }
 
     case "UPDATE":
       const updatedRoll = action.payload
 
-      const updatedRolls = state.rolls.map((roll) => {
+      const updatedRolls = state.student_roll_states.map((roll) => {
         if (roll.student_id === updatedRoll.student_id) {
           return updatedRoll
         }
@@ -25,7 +25,7 @@ const reducer = (state: RollState, action: RollAction): RollState => {
 
       return {
         ...state,
-        rolls: updatedRolls,
+        student_roll_states: updatedRolls,
       }
 
     default:

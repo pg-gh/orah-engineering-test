@@ -20,9 +20,9 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
   const { state } = useContext(RollContext)
 
   const getCount = (status: string) => {
-    if (state?.rolls.length === 0) return 0
+    if (state?.student_roll_states.length === 0) return 0
     else {
-      return state?.rolls.reduce((counter, obj) => (obj.roll_state === status ? (counter += 1) : counter), 0)
+      return state?.student_roll_states.reduce((counter, obj) => (obj.roll_state === status ? (counter += 1) : counter), 0)
     }
   }
 

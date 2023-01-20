@@ -18,12 +18,8 @@ export interface RollInputItem {
   roll_state: RolllStateType
 }
 
-export interface RollState {
-  rolls: RollInputItem[]
-}
-
 export interface ContextModel {
-  state: RollState
+  state: RollInput
   dispatch: React.Dispatch<RollAction>
 }
 

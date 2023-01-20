@@ -16,7 +16,7 @@ export const StudentListTile: React.FC<Props> = ({ isRollMode, student }) => {
   const { state, dispatch } = useContext(RollContext)
 
   const onRollStateChange = (rollState: RolllStateType) => {
-    const found = state?.rolls.some((el) => el.student_id === student.id)
+    const found = state?.student_roll_states.some((el) => el.student_id === student.id)
     dispatch({
       type: !found ? "ADD" : "UPDATE",
       payload: { student_id: student.id, roll_state: rollState },
@@ -24,7 +24,7 @@ export const StudentListTile: React.FC<Props> = ({ isRollMode, student }) => {
   }
 
   const getInitialState = () => {
-    const matchedStudent = state?.rolls.find((el) => el.student_id === student.id)
+    const matchedStudent = state?.student_roll_states.find((el) => el.student_id === student.id)
     return matchedStudent ? matchedStudent.roll_state : "unmark"
   }
 

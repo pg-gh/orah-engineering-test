@@ -86,7 +86,7 @@ export const StudentList: React.FC<Props> = ({ list, isRollMode, onItemClick, ro
     const dataList = [...list]
     if (rollState === "all") setData(dataList)
     else {
-      const matchedIds = state.rolls.filter((item) => item.roll_state === rollState).map((item) => item.student_id)
+      const matchedIds = state.student_roll_states.filter((item) => item.roll_state === rollState).map((item) => item.student_id)
       const filteredData = dataList.filter((item) => matchedIds.includes(item.id))
       setData(filteredData)
     }
