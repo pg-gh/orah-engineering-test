@@ -23,6 +23,11 @@ export const StudentListTile: React.FC<Props> = ({ isRollMode, student }) => {
     })
   }
 
+  const getInitialState = () => {
+    const matchedStudent = state?.rolls.find((el) => el.student_id === student.id)
+    return matchedStudent ? matchedStudent.roll_state : "unmark"
+  }
+
   return (
     <S.Container>
       <S.Avatar url={Images.avatar}></S.Avatar>
@@ -31,7 +36,7 @@ export const StudentListTile: React.FC<Props> = ({ isRollMode, student }) => {
       </S.Content>
       {isRollMode && (
         <S.Roll>
-          <RollStateSwitcher onStateChange={onRollStateChange} />
+          <RollStateSwitcher onStateChange={onRollStateChange} initialState={getInitialState()} />
         </S.Roll>
       )}
     </S.Container>

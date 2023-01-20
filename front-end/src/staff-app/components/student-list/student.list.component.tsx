@@ -1,5 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react"
-
+import React, { useCallback, useState, useEffect, useContext, useMemo, useRef } from "react"
 import { useSort } from "shared/hooks/useSort"
 import { ListItem, SortOption } from "shared/models/sort"
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
@@ -7,8 +6,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Spacing, BorderRadius, FontWeight } from "shared/styles/styles"
 import { Colors } from "shared/styles/colors"
 import Button from "@material-ui/core/ButtonBase"
-
+import { Context as RollContext } from "context/roll-context.component"
 import styled from "styled-components"
+import { ItemType } from "shared/models/roll"
+import debouce from "lodash.debounce"
 
 const sortOptions = [
   { label: "First Name", value: "first_name" },
@@ -16,10 +17,11 @@ const sortOptions = [
 ]
 
 type ToolbarAction = "roll" | "sort"
-export interface SortableListProps {
+export interface Props {
   list: ListItem[]
   isRollMode?: boolean
   onItemClick: (action: ToolbarAction, value?: string) => void
+  rollState: ItemType
 }
 
 function renderSortOptions<ListItem>({ label, value }: SortOption<ListItem>, index: number) {
@@ -27,9 +29,10 @@ function renderSortOptions<ListItem>({ label, value }: SortOption<ListItem>, ind
   return <option key={index} label={`${label}`} title={optionTitle} value={value.toString()} />
 }
 
-export function StudentList({ list, isRollMode, onItemClick }: SortableListProps) {
+export const StudentList: React.FC<Props> = ({ list, isRollMode, onItemClick, rollState }) => {
   const [data, setData] = useState(list)
-  const [searchInput, setSearchInput] = useState("")
+  const elInput = useRef<HTMLInputElement>(null)
+  const { state } = useContext(RollContext)
 
   /**
    * Callback for the SortControl to update state and restart component rendering.
@@ -42,9 +45,13 @@ export function StudentList({ list, isRollMode, onItemClick }: SortableListProps
   // Pass props to the custom sort hook to get sort functionality.
   const { handleDirectionToggle, handleSortKeyChange, sortDirection, sortKey } = useSort<ListItem>({ data, onSortChange, sortOptions })
 
-  const renderListItem = (s: ListItem) => <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
-
-  const renderList = (list: ListItem[]) => <>{list.map(renderListItem)}</>
+  const renderList = (list: ListItem[]) => (
+    <>
+      {list.map((s: ListItem) => (
+        <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
+      ))}
+    </>
+  )
 
   const renderSortOptionSelect = () =>
     sortOptions?.length ? <S.Select onChange={handleSortKeyChange}>{sortOptions.map(renderSortOptions)}</S.Select> : <span>(No sort options were found)</span>
@@ -61,20 +68,52 @@ export function StudentList({ list, isRollMode, onItemClick }: SortableListProps
     )
   }
 
-  const searchStudent = (searchValue: string) => {
-    const searchedData = [...list]
-    if (searchInput !== "") {
-      const filteredData = searchedData.filter((s) => `${s.first_name} ${s.last_name}`.toLowerCase().includes(searchValue.toLowerCase()))
+  // filter records by search text
+  const filterSearchData = (value: string) => {
+    const lowercasedValue = value.toLowerCase().trim()
+    const dataList = [...list]
+    if (lowercasedValue === "") setData(dataList)
+    else {
+      const filteredData = dataList.filter((item) => {
+        return `${item.first_name} ${item.last_name}`.toString().toLowerCase().includes(lowercasedValue)
+      })
       setData(filteredData)
-    } else {
-      setData(searchedData)
     }
   }
 
+  // filter record by roll state
+  const filterRollData = () => {
+    const dataList = [...list]
+    if (rollState === "all") setData(dataList)
+    else {
+      const matchedIds = state.rolls.filter((item) => item.roll_state === rollState).map((item) => item.student_id)
+      const filteredData = dataList.filter((item) => matchedIds.includes(item.id))
+      setData(filteredData)
+    }
+  }
+
+  // handle search Input change
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    filterSearchData(value)
+  }
+
+  const filterResults = useMemo(() => {
+    return debouce(handleChange, 300)
+  }, [])
+
   useEffect(() => {
-    const timeOutId = setTimeout(() => searchStudent(searchInput), 500)
-    return () => clearTimeout(timeOutId)
-  }, [searchInput])
+    return () => {
+      filterResults.cancel()
+    }
+  })
+
+  useEffect(() => {
+    if (elInput.current) {
+      elInput.current.value = ""
+    }
+    filterRollData()
+  }, [rollState])
 
   function renderHeader() {
     return (
@@ -84,7 +123,7 @@ export function StudentList({ list, isRollMode, onItemClick }: SortableListProps
           {renderSortDirectionIcon()}
         </div>
         <S.SearchContainer>
-          <S.Input onChange={(e) => setSearchInput(e.target.value)} value={searchInput} placeholder="Search for a name..." />
+          <S.Input onChange={filterResults} ref={elInput} placeholder="Search for a name..." />
         </S.SearchContainer>
         <S.Button onClick={() => onItemClick("roll")}>Start Roll</S.Button>
       </S.ToolbarContainer>

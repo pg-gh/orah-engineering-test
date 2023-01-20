@@ -26,3 +26,5 @@ export interface ContextModel {
   state: RollState
   dispatch: React.Dispatch<RollAction>
 }
+
+export type ItemType = RolllStateType | "all"

@@ -7,9 +7,11 @@ import { Person } from "shared/models/person"
 import { useApi } from "shared/hooks/use-api"
 import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
 import { StudentList } from "staff-app/components/student-list/student.list.component"
+import { ItemType } from "shared/models/roll"
 
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
+  const [filerByRoll, setFilterByRoll] = useState<ItemType>("all")
   const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
 
   useEffect(() => {
@@ -22,9 +24,11 @@ export const HomeBoardPage: React.FC = () => {
     }
   }
 
-  const onActiveRollAction = (action: ActiveRollAction) => {
+  const onActiveRollAction = (action: ActiveRollAction, value?: ItemType) => {
     if (action === "exit") {
       setIsRollMode(false)
+    } else if (action === "filter" && value !== undefined) {
+      setFilterByRoll(value)
     }
   }
 
@@ -39,7 +43,7 @@ export const HomeBoardPage: React.FC = () => {
 
         {loadState === "loaded" && data?.students && (
           <>
-            <StudentList list={data?.students} isRollMode={isRollMode} onItemClick={onToolbarAction} />
+            <StudentList list={data?.students} isRollMode={isRollMode} onItemClick={onToolbarAction} rollState={filerByRoll} />
           </>
         )}
 
