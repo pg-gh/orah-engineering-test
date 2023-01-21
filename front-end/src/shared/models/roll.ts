@@ -11,7 +11,7 @@ export interface RollInput {
 
 export type RolllStateType = "unmark" | "present" | "absent" | "late"
 
-export type RollAction = { type: "ADD"; payload: RollInputItem } | { type: "UPDATE"; payload: RollInputItem }
+export type RollAction = { type: "ADD"; payload: RollInputItem } | { type: "UPDATE"; payload: RollInputItem } | { type: "RESET" }
 
 export interface RollInputItem {
   student_id: number

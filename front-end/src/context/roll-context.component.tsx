@@ -28,6 +28,12 @@ const reducer = (state: RollInput, action: RollAction): RollInput => {
         student_roll_states: updatedRolls,
       }
 
+    case "RESET":
+      return {
+        ...state,
+        student_roll_states: [],
+      }
+
     default:
       return state
   }
