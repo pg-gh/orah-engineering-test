@@ -7,7 +7,7 @@ import { ItemType } from "shared/models/roll"
 
 interface Props {
   stateList: StateList[]
-  onItemClick: (type: ItemType) => void
+  onItemClick?: (type: ItemType) => void
   size?: number
 }
 export const RollStateList: React.FC<Props> = ({ stateList, size = 14, onItemClick }) => {
