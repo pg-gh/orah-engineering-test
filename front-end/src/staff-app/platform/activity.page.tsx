@@ -6,21 +6,8 @@ import { CenteredContainer } from "shared/components/centered-container/centered
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Activity } from "shared/models/activity"
 import { ActivityListTile } from "staff-app/components/activity-list-tile/activity.list.tile.component"
-import { createStyles, Theme, makeStyles } from "@material-ui/core/styles"
-import List from "@material-ui/core/List"
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: "100%",
-      maxWidth: 360,
-      backgroundColor: theme.palette.background.paper,
-    },
-  })
-)
 
 export const ActivityPage: React.FC = () => {
-  const classes = useStyles()
   const [getActivities, data, loadState] = useApi<{ activity: Activity[] }>({ url: "get-activities" })
 
   useEffect(() => {
@@ -35,11 +22,11 @@ export const ActivityPage: React.FC = () => {
         </CenteredContainer>
       )}
       {loadState === "loaded" && data?.activity && data?.activity.length > 0 && (
-        <List className={classes.root}>
+        <S.List>
           {data.activity.map((s) => (
             <ActivityListTile key={s.entity.id} activity={s.entity} />
           ))}
-        </List>
+        </S.List>
       )}
       {loadState === "error" && (
         <CenteredContainer>
@@ -56,5 +43,11 @@ const S = {
     flex-direction: column;
     width: 50%;
     margin: ${Spacing.u4} auto 0;
+  `,
+  List: styled.div`
+    padding: 1px;
+    margin-top: 10px;
+    border-radius: 8px;
+    background-color: #d4dbdd;
   `,
 }

@@ -8,6 +8,7 @@ import { Context as RollContext } from "context/roll-context.component"
 import { ItemType, RollInput } from "shared/models/roll"
 import { useApi } from "shared/hooks/use-api"
 import { useNavigate } from "react-router-dom"
+import { getCount } from "shared/helpers/roll-utils"
 
 export type ActiveRollAction = "filter" | "exit"
 interface Props {
@@ -18,17 +19,9 @@ interface Props {
 
 export const ActiveRollOverlay: React.FC<Props> = (props) => {
   const { isActive, onItemClick, list } = props
-
   const { state, dispatch } = useContext(RollContext)
   const [saveRoll, , loadState] = useApi({ url: "save-roll" })
   const navigate = useNavigate()
-
-  const getCount = (status: string) => {
-    if (state?.student_roll_states.length === 0) return 0
-    else {
-      return state?.student_roll_states.reduce((counter, obj) => (obj.roll_state === status ? (counter += 1) : counter), 0)
-    }
-  }
 
   const handleComplete = () => {
     if (state.student_roll_states.length > 0) {
@@ -53,9 +46,9 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
           <RollStateList
             stateList={[
               { type: "all", count: list?.length || 0 },
-              { type: "present", count: getCount("present") },
-              { type: "late", count: getCount("late") },
-              { type: "absent", count: getCount("absent") },
+              { type: "present", count: getCount(state.student_roll_states, "present") },
+              { type: "late", count: getCount(state.student_roll_states, "late") },
+              { type: "absent", count: getCount(state.student_roll_states, "absent") },
             ]}
             onItemClick={(type: ItemType) => onItemClick("filter", type)}
           />
